@@ -1,4 +1,4 @@
-import { UserRole } from '@/types';
+import { UserRole } from '../../../types';
 import { z } from 'zod';
 
 const userRoles = Object.values(UserRole) as [UserRole, ...UserRole[]];

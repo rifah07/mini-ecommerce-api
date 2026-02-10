@@ -74,15 +74,15 @@ export const setRefreshTokenCookie = (res: Response, token: string): void => {
  * Clear token cookies
  */
 export const clearTokenCookies = (res: Response): void => {
-  res.cookie('accessToken', '', {
+  const clearOptions = {
     httpOnly: true,
+    secure: config.NODE_ENV === 'production',
+    sameSite: 'strict' as const,
     expires: new Date(0),
-  });
-
-  res.cookie('refreshToken', '', {
-    httpOnly: true,
-    expires: new Date(0),
-  });
+    path: '/',
+  };
+  res.cookie('accessToken', '', clearOptions);
+  res.cookie('refreshToken', '', clearOptions);
 };
 
 export class JWTService {

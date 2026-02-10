@@ -6,6 +6,10 @@ import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import config from './config/env.config';
 import logger from './utils/logger';
+import errorHandler from './middleware/errorHandler.middleware';
+
+import userRoutes from './modules/user/routes/user.routes';
+
 const app: Express = express();
 
 // Security middleware
@@ -55,6 +59,10 @@ app.get('/health', (_req: Request, res: Response) => {
   });
 });
 
+// API routes
+app.use('/api/users', userRoutes);
+
+
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
@@ -63,5 +71,7 @@ app.use((_req: Request, res: Response) => {
     message: 'Route not found',
   });
 });
+
+app.use(errorHandler);
 
 export default app;
