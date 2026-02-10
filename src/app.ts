@@ -5,9 +5,9 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import rateLimit from 'express-rate-limit';
 import config from './config/env.config';
-import logger from './utils/logger';
-import errorHandler from './middleware/errorHandler.middleware';
 import { setupSwagger } from './config/swagger.config';
+import errorHandler from './middleware/errorHandler.middleware';
+import logger from './utils/logger';
 
 import userRoutes from './modules/user/routes/user.routes';
 

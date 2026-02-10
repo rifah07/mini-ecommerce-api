@@ -11,14 +11,6 @@ const options: swaggerJsdoc.Options = {
       version: '1.0.0',
       description:
         'A Mini E-Commerce RESTful API built with Node.js, TypeScript, Express, and MongoDB',
-      contact: {
-        name: 'API Support',
-        email: 'support@ecommerce.com',
-      },
-      license: {
-        name: 'MIT',
-        url: 'https://opensource.org/licenses/MIT',
-      },
     },
     servers: [
       {
