@@ -66,7 +66,12 @@ export interface IOrder {
   updatedAt: Date;
 }
 
-export interface AuthRequest extends Request {
+export interface AuthRequest<
+  Params = any,
+  ResBody = any,
+  ReqBody = any,
+  ReqQuery = any,
+> extends Request<Params, ResBody, ReqBody, ReqQuery> {
   user?: {
     id: string;
     email: string;
