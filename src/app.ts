@@ -1,16 +1,60 @@
 import express, { Express, Request, Response } from 'express';
+import cors from 'cors';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
-
+import morgan from 'morgan';
+import rateLimit from 'express-rate-limit';
+import config from './config/env.config';
+import logger from './utils/logger';
 const app: Express = express();
 
 // Security middleware
 app.use(helmet());
 
+const corsOptions = {
+  origin: config.ALLOWED_ORIGINS.split(','),
+  credentials: true,
+  optionsSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
+
+// Rate limiting
+const limiter = rateLimit({
+  windowMs: config.RATE_LIMIT_WINDOW_MS,
+  max: config.RATE_LIMIT_MAX_REQUESTS,
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+app.use('/api', limiter);
+
 // Body parser middleware
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+
+// Logging middleware
+if (config.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+} else {
+  app.use(
+    morgan('combined', {
+      stream: {
+        write: (message: string) => logger.info(message.trim()),
+      },
+    })
+  );
+}
+
+app.get('/health', (_req: Request, res: Response) => {
+  res.status(200).json({
+    success: true,
+    message: 'Server is running',
+    timestamp: new Date().toISOString(),
+    environment: config.NODE_ENV,
+  });
+});
+
 
 // 404 handler
 app.use((_req: Request, res: Response) => {
