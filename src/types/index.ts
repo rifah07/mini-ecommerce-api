@@ -79,6 +79,17 @@ export interface AuthRequest<
   };
 }
 
+export interface ErrorResponse {
+  success: false;
+  message: string;
+  errors?: unknown;
+}
+
+export interface DevErrorResponse extends ErrorResponse {
+  stack?: string;
+}
+
+
 export interface JWTPayload {
   id: string;
   email: string;

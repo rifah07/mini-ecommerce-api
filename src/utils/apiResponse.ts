@@ -1,4 +1,5 @@
 import { Response } from 'express';
+import {ErrorResponse} from '../types/index';
 
 interface SuccessResponse<T> {
   success: true;
@@ -6,11 +7,11 @@ interface SuccessResponse<T> {
   data: T;
 }
 
-interface ErrorResponse {
+/* interface ErrorResponse {
   success: false;
   message: string;
   errors?: unknown;
-}
+} */
 
 export class ApiResponse {
   static success<T>(res: Response, data: T, message?: string, statusCode: number = 200): Response {
