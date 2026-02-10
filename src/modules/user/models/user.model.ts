@@ -2,9 +2,11 @@ import mongoose, { Schema, Model, HydratedDocument } from 'mongoose';
 import bcrypt from 'bcryptjs';
 import { IUser, UserRole } from '../../../types';
 
-interface IUserMethods {
+export interface IUserMethods {
   comparePassword(candidatePassword: string): Promise<boolean>;
 }
+
+export type UserDocument = mongoose.HydratedDocument<IUser, IUserMethods>;
 
 type UserModel = Model<IUser, {}, IUserMethods>;
 

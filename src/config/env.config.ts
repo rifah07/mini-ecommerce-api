@@ -7,7 +7,7 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(5000),
   MONGODB_URI: z.string().min(1, 'MongoDB URI is required'),
-  MONGODB_URI_TEST: z.string().optional(), 
+  MONGODB_URI_TEST: z.string().optional(),
   JWT_SECRET: z.string().min(32, 'JWT Secret must be at least 32 characters'),
   JWT_REFRESH_SECRET: z.string().min(32, 'JWT Refresh Secret must be at least 32 characters'),
   JWT_EXPIRES_IN: z.string().default('15m'),
