@@ -8,7 +8,7 @@ import { CreateProductInput, UpdateProductInput } from '../validators/product.va
 export class ProductController {
   createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
     const data: CreateProductInput = req.body;
-    const product = await productService.createProduct(data);
+    const product = await productService.createProduct(data, req.user?.role || '');
     return ApiResponse.created(res, { product }, 'Product created successfully');
   });
 
@@ -29,12 +29,12 @@ export class ProductController {
 
   updateProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
     const data: UpdateProductInput = req.body;
-    const product = await productService.updateProduct(req.params.id, data);
+    const product = await productService.updateProduct(req.params.id, data, req.user?.role || '');
     return ApiResponse.success(res, { product }, 'Product updated successfully');
   });
 
   deleteProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const result = await productService.deleteProduct(req.params.id);
+    const result = await productService.deleteProduct(req.params.id, req.user?.role || '');
     return ApiResponse.success(res, result);
   });
 }
