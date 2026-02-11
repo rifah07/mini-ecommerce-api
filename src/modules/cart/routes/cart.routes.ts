@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import cartController from '../controllers/cart.controller';
-import { authenticate } from '../../../middleware/auth.middleware';
+import { authenticate, authorize } from '../../../middleware/auth.middleware';
 import { validate } from '../../../middleware/validate.middleware';
 import {
   addToCartSchema,
   updateCartItemSchema,
   removeFromCartSchema,
 } from '../validators/cart.validator';
+import { UserRole } from '../../../types/index';
 
 const router = Router();
 
@@ -137,7 +138,7 @@ router.get('/', cartController.getCart);
  *       404:
  *         description: Product not found
  */
-router.post('/', validate(addToCartSchema), cartController.addToCart);
+router.post('/', authorize(UserRole.CUSTOMER), validate(addToCartSchema), cartController.addToCart);
 
 /**
  * @swagger
@@ -200,6 +201,40 @@ router.put('/:productId', validate(updateCartItemSchema), cartController.updateC
 
 /**
  * @swagger
+ * /api/cart:
+ *   delete:
+ *     summary: Clear entire cart
+ *     tags: [Cart]
+ *     security:
+ *       - bearerAuth: []
+ *       - cookieAuth: []
+ *     responses:
+ *       200:
+ *         description: Cart cleared successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Cart cleared successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     cart:
+ *                       $ref: '#/components/schemas/Cart'
+ *       401:
+ *         description: Not authenticated
+ *       404:
+ *         description: Cart not found
+ */
+router.delete('/', cartController.clearCart);
+/**
+ * @swagger
  * /api/cart/{productId}:
  *   delete:
  *     summary: Remove product from cart
@@ -240,40 +275,5 @@ router.put('/:productId', validate(updateCartItemSchema), cartController.updateC
  *         description: Cart or product not found
  */
 router.delete('/:productId', validate(removeFromCartSchema), cartController.removeFromCart);
-
-/**
- * @swagger
- * /api/cart:
- *   delete:
- *     summary: Clear entire cart
- *     tags: [Cart]
- *     security:
- *       - bearerAuth: []
- *       - cookieAuth: []
- *     responses:
- *       200:
- *         description: Cart cleared successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Cart cleared successfully"
- *                 data:
- *                   type: object
- *                   properties:
- *                     cart:
- *                       $ref: '#/components/schemas/Cart'
- *       401:
- *         description: Not authenticated
- *       404:
- *         description: Cart not found
- */
-router.delete('/', cartController.clearCart);
 
 export default router;

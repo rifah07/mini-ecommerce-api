@@ -12,6 +12,7 @@ import logger from './utils/logger';
 import userRoutes from './modules/user/routes/user.routes';
 import productRoutes from './modules/product/routes/product.routes';
 import cartRoutes from './modules/cart/routes/cart.routes';
+import orderRoutes from './modules/order/routes/order.routes';
 
 const app: Express = express();
 
@@ -66,6 +67,7 @@ app.get('/health', (_req: Request, res: Response) => {
 app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api/orders', orderRoutes);
 
 // Swagger documentation
 setupSwagger(app);
