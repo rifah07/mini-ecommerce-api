@@ -10,6 +10,7 @@ import errorHandler from './middleware/errorHandler.middleware';
 import logger from './utils/logger';
 
 import userRoutes from './modules/user/routes/user.routes';
+import productRoutes from './modules/product/routes/product.routes';
 
 const app: Express = express();
 
@@ -62,6 +63,7 @@ app.get('/health', (_req: Request, res: Response) => {
 
 // API routes
 app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes);
 
 // Swagger documentation
 setupSwagger(app);
