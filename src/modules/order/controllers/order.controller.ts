@@ -24,6 +24,11 @@ export class OrderController {
     return ApiResponse.success(res, { order });
   });
 
+  cancelOrder = asyncHandler(async (req: AuthRequest, res: Response) => {
+    const order = await orderService.cancelOrder(req.params.id, req.user!.id);
+    return ApiResponse.success(res, { order }, 'Order cancelled successfully');
+  });
+
   getAllOrders = asyncHandler(async (req: AuthRequest, res: Response) => {
     const page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
     const limit = Number(req.query.limit) > 0 ? Number(req.query.limit) : 10;
