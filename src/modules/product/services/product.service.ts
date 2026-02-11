@@ -1,11 +1,9 @@
 import Product from '../models/product.model';
 import { CreateProductInput, UpdateProductInput } from '../validators/product.validator';
-import { AuthorizationError, NotFoundError, ValidationError } from '../../../utils/errors';
+import { NotFoundError, ValidationError } from '../../../utils/errors';
 
 export class ProductService {
-  async createProduct(data: CreateProductInput, userRole: string) {
-    if (userRole !== 'admin') throw new AuthorizationError();
-
+  async createProduct(data: CreateProductInput) {
     const product = await Product.create(data);
     return product;
   }
@@ -38,9 +36,7 @@ export class ProductService {
     return product;
   }
 
-  async updateProduct(productId: string, data: UpdateProductInput, userRole: string) {
-    if (userRole !== 'admin') throw new AuthorizationError();
-
+  async updateProduct(productId: string, data: UpdateProductInput) {
     const product = await Product.findByIdAndUpdate(
       productId,
       { $set: data },
@@ -54,9 +50,7 @@ export class ProductService {
     return product;
   }
 
-  async deleteProduct(productId: string, userRole: string) {
-    if (userRole !== 'admin') throw new AuthorizationError();
-
+  async deleteProduct(productId: string) {
     const product = await Product.findByIdAndDelete(productId);
     if (!product) {
       throw new NotFoundError('Product not found');
