@@ -7,10 +7,8 @@ export enum UserRole {
 
 export enum OrderStatus {
   PENDING = 'pending',
-  PROCESSING = 'processing',
   SHIPPED = 'shipped',
   DELIVERED = 'delivered',
-  CANCELLED = 'cancelled',
 }
 
 export interface IUser {
