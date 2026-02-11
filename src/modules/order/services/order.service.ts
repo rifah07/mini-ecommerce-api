@@ -2,6 +2,7 @@ import mongoose from 'mongoose';
 import Order from '../models/order.model';
 import Cart from '../../cart/models/cart.model';
 import Product from '../../product/models/product.model';
+import productService from '../../product/services/product.service';
 import { UpdateOrderStatusInput } from '../validators/order.validator';
 import { NotFoundError, ValidationError } from '../../../utils/errors';
 import { OrderStatus } from '../../../types';
@@ -19,7 +20,6 @@ export class OrderService {
         throw new ValidationError('Cart is empty');
       }
 
-      // Verify stock and prepare order items
       const orderItems = [];
       for (const item of cart.items) {
         const product = await Product.findById(item.product).session(session);
@@ -48,8 +48,10 @@ export class OrderService {
         });
       }
 
+      // Calculate total amount
       const totalAmount = orderItems.reduce((sum, item) => sum + item.subtotal, 0);
 
+      // Create order
       const order = await Order.create(
         [
           {
@@ -151,27 +153,62 @@ export class OrderService {
       throw new NotFoundError('Order not found');
     }
 
-    // Allowed transitions
+    const currentStatus = order.status as OrderStatus;
+
     const validTransitions: Record<OrderStatus, OrderStatus[]> = {
-      [OrderStatus.PENDING]: [OrderStatus.SHIPPED],
+      [OrderStatus.PENDING]: [OrderStatus.CANCELLED, OrderStatus.SHIPPED],
       [OrderStatus.SHIPPED]: [OrderStatus.DELIVERED],
       [OrderStatus.DELIVERED]: [],
+      [OrderStatus.CANCELLED]: [],
     };
 
-    const allowedStatuses = validTransitions[order.status];
+    const allowedStatuses = validTransitions[currentStatus];
 
     if (!allowedStatuses.includes(data.status)) {
       throw new ValidationError(
-        `Cannot change status from ${order.status} to ${data.status}. Allowed: ${allowedStatuses.join(', ')}`
+        `Cannot transition from ${currentStatus} to ${data.status}. Allowed: ${allowedStatuses.join(', ')}`
       );
     }
 
-    order.status = data.status;
-    await order.save();
+    if (data.status === OrderStatus.CANCELLED && currentStatus !== OrderStatus.CANCELLED) {
+      const session = await mongoose.startSession();
+      session.startTransaction();
 
-    logger.info(`Order ${orderId} status updated to ${data.status}`);
+      try {
+        for (const item of order.items) {
+          await productService.increaseStock(item.product.toString(), item.quantity);
+        }
+
+        order.status = data.status;
+        await order.save({ session });
+
+        await session.commitTransaction();
+        logger.info(`Order ${orderId} cancelled and stock restored`);
+      } catch (error) {
+        await session.abortTransaction();
+        throw error;
+      } finally {
+        session.endSession();
+      }
+    } else {
+      order.status = data.status;
+      await order.save();
+      logger.info(`Order ${orderId} status updated to ${data.status}`);
+    }
 
     return await Order.findById(orderId).populate('items.product user');
+  }
+
+  async cancelOrder(orderId: string, userId: string) {
+    const order = await Order.findOne({ _id: orderId, user: userId });
+
+    if (!order) {
+      throw new NotFoundError('Order not found or unauthorized');
+    }
+
+    return await this.updateOrderStatus(orderId, {
+      status: OrderStatus.CANCELLED,
+    });
   }
 }
 

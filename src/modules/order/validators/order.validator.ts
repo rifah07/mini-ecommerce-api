@@ -1,7 +1,12 @@
 import { z } from 'zod';
 import { OrderStatus } from '../../../types';
 
-const OrderStatusSchema = z.enum([OrderStatus.PENDING, OrderStatus.SHIPPED, OrderStatus.DELIVERED]);
+const OrderStatusSchema = z.enum([
+  OrderStatus.PENDING,
+  OrderStatus.SHIPPED,
+  OrderStatus.DELIVERED,
+  OrderStatus.CANCELLED,
+]);
 
 const mongoIdSchema = z
   .string()
