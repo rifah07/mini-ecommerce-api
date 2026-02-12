@@ -69,6 +69,10 @@ if (config.NODE_ENV === 'development') {
   );
 }
 
+app.get('/', (req: Request, res: Response) => {
+  res.send('API is running');
+});
+
 app.get('/health', (_req: Request, res: Response) => {
   res.status(200).json({
     success: true,
