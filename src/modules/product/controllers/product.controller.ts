@@ -22,16 +22,17 @@ export class ProductController {
     return ApiResponse.success(res, result);
   });
 
-  getProductById = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const product = await productService.getProductById(req.params.id);
+  getProductById = asyncHandler(async (req: AuthRequest<{ id: string }>, res: Response) => {
+    const product = await productService.getProductById(req.params.id); // Fixed!
     return ApiResponse.success(res, { product });
   });
-
-  updateProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const data: UpdateProductInput = req.body;
-    const product = await productService.updateProduct(req.params.id, data);
-    return ApiResponse.success(res, { product }, 'Product updated successfully');
-  });
+  updateProduct = asyncHandler(
+    async (req: AuthRequest<{ id: string }, any, UpdateProductInput>, res: Response) => {
+      const data = req.body;
+      const product = await productService.updateProduct(req.params.id, data);
+      return ApiResponse.success(res, { product }, 'Product updated successfully');
+    }
+  );
 
   deleteProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
     const result = await productService.deleteProduct(req.params.id);

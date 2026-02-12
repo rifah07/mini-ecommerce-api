@@ -69,17 +69,11 @@ export interface IOrder {
 }
 
 export interface AuthRequest<
-  Params = any,
+  P = any,
   ResBody = any,
   ReqBody = any,
-  ReqQuery = any,
-> extends Request<Params, ResBody, ReqBody, ReqQuery> {
-  user?: {
-    id: string;
-    email: string;
-    role: UserRole;
-  };
-}
+  ReqQuery = any
+> extends Request<P, ResBody, ReqBody, ReqQuery> {}
 
 export interface ErrorResponse {
   success: false;
@@ -91,6 +85,13 @@ export interface DevErrorResponse extends ErrorResponse {
   stack?: string;
 }
 
+declare global {
+  namespace Express {
+    interface Request {
+      user?: JWTPayload;
+    }
+  }
+}
 export interface JWTPayload {
   id: string;
   email: string;
