@@ -50,6 +50,11 @@ node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 
 Run the command twice and use each output for `JWT_SECRET` and `JWT_REFRESH_SECRET` respectively.
 
+### Start MongoDB
+- Go to mongoDB altas
+- Get the URI
+  Add the URI in .env
+
 ### Run the server
 
 ```bash
