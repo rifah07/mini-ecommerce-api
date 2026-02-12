@@ -61,6 +61,9 @@ export interface IOrder {
   items: IOrderItem[];
   totalAmount: number;
   status: OrderStatus;
+  stockRestored: boolean;
+  cancelledAt?: Date;
+  cancellationReason?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -87,7 +90,6 @@ export interface ErrorResponse {
 export interface DevErrorResponse extends ErrorResponse {
   stack?: string;
 }
-
 
 export interface JWTPayload {
   id: string;

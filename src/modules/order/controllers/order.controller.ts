@@ -1,9 +1,10 @@
 import { Response } from 'express';
 import orderService from '../services/order.service';
-import { AuthRequest, OrderStatus } from '../../../types';
+import { AuthRequest } from '../../../types';
 import asyncHandler from '../../../utils/asyncHandler';
 import ApiResponse from '../../../utils/apiResponse';
 import { UpdateOrderStatusInput } from '../validators/order.validator';
+import { OrderStatus } from '../../../types';
 
 export class OrderController {
   createOrder = asyncHandler(async (req: AuthRequest, res: Response) => {
@@ -12,8 +13,8 @@ export class OrderController {
   });
 
   getUserOrders = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
-    const limit = Number(req.query.limit) > 0 ? Number(req.query.limit) : 10;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
 
     const result = await orderService.getUserOrders(req.user!.id, page, limit);
     return ApiResponse.success(res, result);
@@ -25,16 +26,16 @@ export class OrderController {
   });
 
   cancelOrder = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const order = await orderService.cancelOrder(req.params.id, req.user!.id);
+    const { reason } = req.body;
+    const order = await orderService.cancelOrder(req.params.id, req.user!.id, reason);
     return ApiResponse.success(res, { order }, 'Order cancelled successfully');
   });
 
+  // Admin routes
   getAllOrders = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const page = Number(req.query.page) > 0 ? Number(req.query.page) : 1;
-    const limit = Number(req.query.limit) > 0 ? Number(req.query.limit) : 10;
-    const status = Object.values(OrderStatus).includes(req.query.status as OrderStatus)
-      ? (req.query.status as OrderStatus)
-      : undefined;
+    const page = parseInt(req.query.page as string) || 1;
+    const limit = parseInt(req.query.limit as string) || 10;
+    const status = req.query.status as OrderStatus;
 
     const result = await orderService.getAllOrders(page, limit, status);
     return ApiResponse.success(res, result);

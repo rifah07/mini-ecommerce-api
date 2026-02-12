@@ -51,6 +51,19 @@ const orderSchema = new Schema<IOrder, OrderModel>(
       enum: Object.values(OrderStatus),
       default: OrderStatus.PENDING,
     },
+    stockRestored: {
+      type: Boolean,
+      default: false,
+    },
+    cancelledAt: {
+      type: Date,
+      default: null,
+    },
+    cancellationReason: {
+      type: String,
+      default: null,
+      maxlength: 500,
+    },
   },
   {
     timestamps: true,
@@ -65,6 +78,7 @@ const orderSchema = new Schema<IOrder, OrderModel>(
 
 orderSchema.index({ user: 1, createdAt: -1 });
 orderSchema.index({ status: 1 });
+orderSchema.index({ user: 1, status: 1, cancelledAt: -1 });
 
 const Order = mongoose.model<IOrder, OrderModel>('Order', orderSchema);
 
