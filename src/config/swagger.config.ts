@@ -14,6 +14,10 @@ const options: swaggerJsdoc.Options = {
     },
     servers: [
       {
+        url: `https://mini-ecommerce-api-da89.onrender.com/`,
+        description: 'Production server',
+      },
+      {
         url: `http://localhost:${config.PORT}`,
         description: 'Development server',
       },
@@ -28,7 +32,7 @@ const options: swaggerJsdoc.Options = {
         cookieAuth: {
           type: 'apiKey',
           in: 'cookie',
-          name: 'token',
+          name: 'accessToken',
         },
       },
       schemas: {
@@ -122,7 +126,7 @@ const options: swaggerJsdoc.Options = {
       },
     ],
   },
-  apis: ['./src/modules/**/routes/*.ts'],
+  apis: ['./src/modules/**/routes/*.ts', './dist/modules/**/routes/*.js'],
 };
 
 const swaggerSpec = swaggerJsdoc(options);
