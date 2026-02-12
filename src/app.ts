@@ -15,6 +15,11 @@ import cartRoutes from './modules/cart/routes/cart.routes';
 import orderRoutes from './modules/order/routes/order.routes';
 
 const app: Express = express();
+app.set('trust proxy', 1);
+/* Without this set:
+Rate limit may block everyone
+Cookies may not work correctly
+req.ip becomes unreliable */
 
 // Security middleware
 app.use(helmet());

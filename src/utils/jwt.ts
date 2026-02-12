@@ -54,6 +54,7 @@ export const setAccessTokenCookie = (res: Response, token: string): void => {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
     sameSite: 'strict' as const,
+    path: '/',
   };
 
   res.cookie('accessToken', token, cookieOptions);
@@ -65,6 +66,7 @@ export const setRefreshTokenCookie = (res: Response, token: string): void => {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
     sameSite: 'strict' as const,
+    path: '/',
   };
 
   res.cookie('refreshToken', token, cookieOptions);

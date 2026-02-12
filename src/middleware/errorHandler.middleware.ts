@@ -55,6 +55,11 @@ export const errorHandler = (
     message = 'Token expired';
   }
 
+  if (err.name === 'ZodError') {
+    statusCode = 400;
+    message = 'Validation failed';
+  }
+
   if (!isOperational || statusCode === 500) {
     logger.error('Unhandled Error:', {
       message: err.message,
