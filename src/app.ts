@@ -24,11 +24,21 @@ req.ip becomes unreliable */
 // Security middleware
 app.use(helmet());
 
-const corsOptions = {
-  origin: config.ALLOWED_ORIGINS.split(','),
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    const allowedOrigins = config.ALLOWED_ORIGINS.split(',');
+
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin) || allowedOrigins.includes('*')) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
   optionsSuccessStatus: 200,
 };
+
 app.use(cors(corsOptions));
 
 // Rate limiting
