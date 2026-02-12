@@ -19,7 +19,7 @@ A RESTful backend API for a basic online shopping platform, handling authenticat
 | Auth | JWT (access + refresh tokens) with HTTP-only cookies |
 | Security | Helmet, CORS, express-rate-limit, bcryptjs |
 | Logging | Winston + Morgan |
-| Docs | Swagger UI (OpenAPI 3.0) |
+| Docs | Swagger UI |
 
 ---
 
@@ -69,7 +69,6 @@ Server starts at `http://localhost:5000`
 |---|---|
 | `GET /health` | Health check |
 | `GET /api-docs` | Interactive API docs |
-| `GET /api-docs.json` | OpenAPI spec (import into Postman) |
 
 ---
 
