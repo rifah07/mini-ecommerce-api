@@ -58,8 +58,6 @@ cartSchema.pre('save', function () {
   }, 0);
 });
 
-cartSchema.index({ user: 1 });
-
 const Cart = mongoose.model<ICart, CartModel>('Cart', cartSchema);
 
 export default Cart;

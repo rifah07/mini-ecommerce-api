@@ -31,7 +31,7 @@ A RESTful backend API for a basic online shopping platform, handling authenticat
 - MongoDB running locally (or a MongoDB Atlas connection string)
 - npm v9+
 
-> **Note:** This project uses **Express 5**, **Mongoose 9**, and **Zod 4** — all major versions with breaking changes from their predecessors. Do not downgrade them; the code is written specifically for these versions.
+> **Note:** This project uses **Express 5**, **Mongoose 9**, and **Zod 4** - all major versions with breaking changes from their predecessors. Downgrading them any occur problems.
 
 ### Installation
 
