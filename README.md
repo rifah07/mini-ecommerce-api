@@ -2,7 +2,7 @@
 
 A RESTful backend API for a basic online shopping platform, handling authentication, product management, cart operations, and order processing with proper business logic and data consistency.
 
-**Live API:**   https://mini-ecommerce-api-da89.onrender.com/
+**Live API:**   https://mini-ecommerce-api-da89.onrender.com/  
 **Swagger Docs:** https://mini-ecommerce-api-da89.onrender.com/api-docs
 
 ---
