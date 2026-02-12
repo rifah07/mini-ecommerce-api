@@ -49,7 +49,7 @@ router.use(authenticate);
  *           example: 2599.98
  *         status:
  *           type: string
- *           enum: [pending, processing, shipped, delivered, cancelled]
+ *           enum: [pending, shipped, delivered, cancelled]
  *           example: "pending"
  *         createdAt:
  *           type: string
@@ -293,11 +293,17 @@ router.get(
  *   put:
  *     summary: Update order status (Admin only)
  *     description: |
- *       Update order status following valid transitions:
+ *       Updates an order status following strict transition rules:
+ *
+ *       Valid transitions:
  *       - pending → cancelled
  *       - shipped → delivered
- *       - delivered → (no transitions)
- *       - cancelled → (no transitions)
+ *
+ *       Terminal statuses:
+ *       - delivered (cannot change)
+ *       - cancelled (cannot change)
+ *
+ *       Admin cancellations also restore product stock safely.
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -309,7 +315,6 @@ router.get(
  *         schema:
  *           type: string
  *         description: Order ID
- *         example: "507f1f77bcf86cd799439011"
  *     requestBody:
  *       required: true
  *       content:
@@ -321,34 +326,21 @@ router.get(
  *             properties:
  *               status:
  *                 type: string
- *                 enum: [pending, processing, shipped, delivered, cancelled]
- *                 description: New order status
- *                 example: "processing"
+ *                 enum: [cancelled, delivered]
+ *                 description: |
+ *                   New status value:
+ *                   - cancelled (only if current status is pending)
+ *                   - delivered (only if current status is shipped)
+ *                 example: "delivered"
  *     responses:
  *       200:
  *         description: Order status updated successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Order status updated successfully"
- *                 data:
- *                   type: object
- *                   properties:
- *                     order:
- *                       $ref: '#/components/schemas/Order'
  *       400:
  *         description: Invalid status transition
  *       401:
  *         description: Not authenticated
  *       403:
- *         description: Access denied - Admin only
+ *         description: Admin only
  *       404:
  *         description: Order not found
  */
@@ -403,8 +395,14 @@ router.get('/:id', validate(orderIdSchema), orderController.getOrderById);
  * @swagger
  * /api/orders/{id}/cancel:
  *   put:
- *     summary: Cancel order
- *     description: Cancels the order and restores product stock. Only orders with status 'pending' or 'processing' can be cancelled.
+ *     summary: Cancel order (Customer)
+ *     description: |
+ *       Cancels a pending order and restores product stock.
+ *
+ *       Rules:
+ *       - Only orders with status **pending** can be cancelled.
+ *       - Fraud protection prevents excessive cancellations.
+ *       - Stock restore is idempotent (prevents double restore).
  *     tags: [Orders]
  *     security:
  *       - bearerAuth: []
@@ -417,32 +415,29 @@ router.get('/:id', validate(orderIdSchema), orderController.getOrderById);
  *           type: string
  *         description: Order ID
  *         example: "507f1f77bcf86cd799439011"
+ *     requestBody:
+ *       required: false
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               reason:
+ *                 type: string
+ *                 example: "Changed my mind"
  *     responses:
  *       200:
  *         description: Order cancelled successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 success:
- *                   type: boolean
- *                   example: true
- *                 message:
- *                   type: string
- *                   example: "Order cancelled successfully"
- *                 data:
- *                   type: object
- *                   properties:
- *                     order:
- *                       $ref: '#/components/schemas/Order'
  *       400:
- *         description: Invalid status transition
+ *         description: Order cannot be cancelled unless pending
  *       401:
  *         description: Not authenticated
+ *       403:
+ *         description: Cancellation blocked due to fraud protection
  *       404:
  *         description: Order not found
  */
+
 router.put('/:id/cancel', validate(orderIdSchema), orderController.cancelOrder);
 
 export default router;
