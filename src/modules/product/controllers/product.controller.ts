@@ -7,7 +7,7 @@ import { CreateProductInput, UpdateProductInput } from '../validators/product.va
 
 export class ProductController {
   createProduct = asyncHandler(async (req: AuthRequest, res: Response) => {
-    const data: CreateProductInput = req.body;
+    const data = req.body as CreateProductInput;
     const product = await productService.createProduct(data);
     return ApiResponse.created(res, { product }, 'Product created successfully');
   });
